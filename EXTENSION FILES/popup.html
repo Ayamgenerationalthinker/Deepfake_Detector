@@ -25,6 +25,17 @@
       <div class="quick-analyze">
         <h2>Analyze Video</h2>
         <p>Right-click on any video and select <strong>"Analyze with VeriGuard"</strong> to check it.</p>
+
+        <div class="upload-panel">
+          <div class="upload-copy">
+            <h3>Analyze a video file</h3>
+            <p>Select an MP4, WebM, or MOV file from your device.</p>
+          </div>
+          <label for="video-file" class="upload-button">Choose Video</label>
+          <input type="file" id="video-file" accept="video/*" hidden>
+          <div id="upload-file-name" class="upload-file-name">No video selected</div>
+          <div id="upload-analysis-result"></div>
+        </div>
         
         <div class="or-divider">
           <span>OR</span>

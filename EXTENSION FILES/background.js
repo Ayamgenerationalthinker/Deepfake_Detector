@@ -140,6 +140,13 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
 // Improving background script message handling
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg.action === "analyzeUploadedFrames") {
+    analyzeUploadedFrames(msg.frames, msg.fileName)
+      .then(sendResponse)
+      .catch(error => sendResponse({ error: error.message || "Upload analysis failed" }));
+    return true;
+  }
+
   // Handling messages for video analysis
   if (msg.action === "analyzeCurrentVideo") {
    
@@ -222,6 +229,45 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return true;
   }
 });
+
+async function ensureOffscreenDocumentForUpload() {
+  if (await chrome.offscreen.hasDocument()) return;
+  await chrome.offscreen.createDocument({
+    url: 'offscreen.html',
+    reasons: ['DOM_PARSER'],
+    justification: 'Running ONNX Runtime Web for uploaded video analysis'
+  });
+}
+
+function analyzeUploadedFrames(frames, fileName) {
+  if (!Array.isArray(frames) || frames.length === 0) {
+    return Promise.reject(new Error('No video frames were extracted.'));
+  }
+
+  return ensureOffscreenDocumentForUpload().then(() => new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({
+      target: 'offscreen',
+      action: 'analyzeFrames',
+      frames,
+      metadata: {
+        tabId: null,
+        id: `upload-${Date.now()}`,
+        timestamp: Date.now(),
+        frameCount: frames.length,
+        source: 'upload',
+        fileName
+      }
+    }, result => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+      } else if (!result || result.error) {
+        reject(new Error(result?.error || 'The local model returned no result.'));
+      } else {
+        resolve(result);
+      }
+    });
+  }));
+}
 
 // Analyzing current video playing on web page
 function analyzeCurrentVideo(tabId) {

@@ -72,10 +72,12 @@ body {
 }
 
 .logo {
-  width: 28px;
-  height: 28px;
-  margin-right: 12px;
-  border-radius: 6px;
+  width: 128px;
+  height: 38px;
+  margin-right: 10px;
+  border-radius: 5px;
+  object-fit: contain;
+  object-position: left center;
   box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
 }
 
@@ -188,6 +190,55 @@ body {
 /* Main Tab */
 .quick-analyze {
   margin-bottom: 24px;
+}
+
+.upload-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--accent-cyan);
+  border-radius: 8px;
+  padding: 14px;
+  margin: 16px 0 20px;
+}
+
+.upload-copy h3 {
+  margin: 0 0 4px;
+  color: var(--text-main);
+}
+
+.upload-copy p {
+  margin-bottom: 10px;
+}
+
+.upload-button {
+  display: block;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--gradient-primary);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  text-align: center;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.upload-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.upload-button.disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.upload-file-name {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 9px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .platform-detected {

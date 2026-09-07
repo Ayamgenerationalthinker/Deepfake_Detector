@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // For URL analysis
     setupUrlAnalysis();
+
+    // For local video uploads
+    setupUploadAnalysis();
     
     // For loading History content on the tab
     loadHistory();
@@ -33,6 +36,116 @@ document.addEventListener('DOMContentLoaded', function() {
         const tabId = button.getAttribute('data-tab');
         document.getElementById(`${tabId}-tab`).classList.add('active');
       });
+    });
+  }
+
+  function setupUploadAnalysis() {
+    const fileInput = document.getElementById('video-file');
+    const uploadButton = document.querySelector('.upload-button');
+    const fileName = document.getElementById('upload-file-name');
+    const resultContainer = document.getElementById('upload-analysis-result');
+
+    fileInput.addEventListener('change', async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      fileName.textContent = file.name;
+      uploadButton.classList.add('disabled');
+      resultContainer.innerHTML = '<div class="analysis-result pending">Preparing video frames...</div>';
+
+      try {
+        const frames = await extractVideoFrames(file);
+        resultContainer.innerHTML = `<div class="analysis-result pending">Analyzing ${frames.length} frames...</div>`;
+
+        chrome.runtime.sendMessage({
+          action: 'analyzeUploadedFrames',
+          frames,
+          fileName: file.name
+        }, response => {
+          if (chrome.runtime.lastError) {
+            showUploadResult('error', chrome.runtime.lastError.message);
+          } else if (!response || response.error) {
+            showUploadResult('error', response?.error || 'The video could not be analyzed.');
+          } else {
+            const label = response.deepfake ? 'Deepfake detected' : 'Video appears authentic';
+            const confidence = (Number(response.confidence || 0) * 100).toFixed(1);
+            showUploadResult(response.deepfake ? 'error' : 'success', `${label} (${confidence}% confidence, ${response.frames_analyzed} frames)`);
+          }
+          uploadButton.classList.remove('disabled');
+        });
+      } catch (error) {
+        showUploadResult('error', error.message || 'Could not read this video file.');
+        uploadButton.classList.remove('disabled');
+      }
+    });
+
+    function showUploadResult(type, message) {
+      resultContainer.innerHTML = `<div class="analysis-result ${type === 'success' ? 'success' : 'error'}">${message}</div>`;
+    }
+  }
+
+  function extractVideoFrames(file) {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement('video');
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      const objectUrl = URL.createObjectURL(file);
+      const frames = [];
+      canvas.width = 224;
+      canvas.height = 224;
+      video.preload = 'metadata';
+      video.muted = true;
+      video.playsInline = true;
+      video.src = objectUrl;
+
+      video.addEventListener('error', () => finish(new Error('This video format could not be read by the browser.')));
+      video.addEventListener('loadedmetadata', async () => {
+        if (!Number.isFinite(video.duration) || video.duration <= 0) {
+          finish(new Error('The video has no readable duration.'));
+          return;
+        }
+
+        const frameCount = Math.min(32, Math.max(12, Math.ceil(video.duration * 2)));
+        try {
+          for (let index = 0; index < frameCount; index += 1) {
+            const time = frameCount === 1 ? 0 : (video.duration * index) / (frameCount - 1);
+            await seekVideo(video, Math.min(time, Math.max(0, video.duration - 0.05)));
+            context.drawImage(video, 0, 0, 224, 224);
+            frames.push(canvas.toDataURL('image/jpeg', 0.82));
+          }
+          finish(null, frames);
+        } catch (error) {
+          finish(error);
+        }
+      }, { once: true });
+
+      function finish(error, value) {
+        URL.revokeObjectURL(objectUrl);
+        video.removeAttribute('src');
+        video.load();
+        if (error) reject(error);
+        else resolve(value);
+      }
+    });
+  }
+
+  function seekVideo(video, time) {
+    return new Promise((resolve, reject) => {
+      const onSeeked = () => {
+        cleanup();
+        resolve();
+      };
+      const onError = () => {
+        cleanup();
+        reject(new Error('A video frame could not be decoded.'));
+      };
+      const cleanup = () => {
+        video.removeEventListener('seeked', onSeeked);
+        video.removeEventListener('error', onError);
+      };
+      video.addEventListener('seeked', onSeeked, { once: true });
+      video.addEventListener('error', onError, { once: true });
+      video.currentTime = time;
     });
   }
   
