@@ -65,21 +65,23 @@ body {
 }
 
 .header {
-  padding: 16px 20px;
+  padding: 14px 20px;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid var(--border-subtle);
+  justify-content: center;
+  border-bottom: none;
+  background: transparent;
 }
 
 .logo {
   width: 128px;
   height: 38px;
-  margin-right: 10px;
+  margin-right: 0;
   border-radius: 5px;
   object-fit: contain;
   object-position: left center;
   mix-blend-mode: normal;
-  box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+  box-shadow: none;
 }
 
 /* Tab Navigation */
