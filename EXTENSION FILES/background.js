@@ -263,6 +263,22 @@ function analyzeUploadedFrames(frames, fileName) {
       } else if (!result || result.error) {
         reject(new Error(result?.error || 'The local model returned no result.'));
       } else {
+        const requestId = `upload-${Date.now()}`;
+        const timestamp = new Date().toISOString();
+        const historyResult = {
+          ...result,
+          requestId,
+          timestamp
+        };
+        analysisHistory.unshift({
+          id: requestId,
+          date: timestamp,
+          url: '',
+          platform: 'upload',
+          result: historyResult
+        });
+        analysisHistory = analysisHistory.slice(0, 50);
+        chrome.storage.local.set({analysisHistory});
         resolve(result);
       }
     });

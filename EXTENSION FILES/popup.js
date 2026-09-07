@@ -325,6 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const isDeepfake = item.result && item.result.deepfake;
         const confidence = item.result ? (item.result.confidence * 100).toFixed(1) : "N/A";
         
+        const hasUrl = Boolean(item.url && isValidUrl(item.url));
         html += `
           <div class="history-item">
             <div class="history-header">
@@ -338,7 +339,7 @@ document.addEventListener('DOMContentLoaded', function() {
               ${isDeepfake ? '⚠️ Deepfake Detected' : '✓ Authentic Video'}
             </div>
             <div class="history-confidence">Confidence: ${confidence}%</div>
-            <div class="history-url" title="${item.url}" data-url="${item.url}">${truncateUrl(item.url)}</div>
+            <div class="history-url${hasUrl ? '' : ' local-upload'}"${hasUrl ? ` title="${item.url}" data-url="${item.url}"` : ''}>${hasUrl ? truncateUrl(item.url) : 'Local video upload'}</div>
           </div>
         `;
       });
@@ -350,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
       urlElements.forEach(el => {
         el.addEventListener('click', () => {
           const url = el.getAttribute('data-url');
-          chrome.tabs.create({url: url});
+          if (url) chrome.tabs.create({url});
         });
       });
     });
