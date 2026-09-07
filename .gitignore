@@ -1,0 +1,17 @@
+MODEL CODES/__pycache__/
+MODEL CODES/*.py[cod]
+__pycache__/
+*.pyc
+
+# Local training outputs and generated datasets
+Output/
+Frames/
+Manifests/
+Results/
+Saved_Models/
+
+# Local machine and editor files
+.env
+.venv/
+venv/
+.vscode/

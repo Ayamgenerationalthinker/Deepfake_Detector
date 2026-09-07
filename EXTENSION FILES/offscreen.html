@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>VeriGuard Analysis</title>
+</head>
+<body>
+  <!-- Canvas used for preprocessing frames before feeding them to ONNX -->
+  <canvas id="preprocessCanvas" width="224" height="224" style="display:none;"></canvas>
+  
+  <!-- Load ONNX Runtime Web -->
+  <script src="lib/ort.min.js"></script>
+  
+  <!-- Load our custom logic -->
+  <script src="offscreen.js"></script>
+</body>
+</html>

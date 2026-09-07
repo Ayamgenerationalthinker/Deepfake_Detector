@@ -1,0 +1,450 @@
+/* VeriGuard page styles */
+
+/* Notification styling */
+.deepfake-detector-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(15, 23, 42, 0.96);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    max-width: 320px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9999999;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    animation: deepfake-detector-slide-in 0.3s ease-out;
+    backdrop-filter: blur(8px);
+  }
+  
+  .deepfake-detector-notification.error {
+    background-color: rgba(219, 68, 55, 0.9);
+  }
+  
+  .deepfake-detector-notification.progress {
+    background-color: rgba(6, 182, 212, 0.96);
+  }
+  
+  .deepfake-detector-notification.start {
+    background-color: rgba(33, 33, 33, 0.9);
+  }
+  
+  .deepfake-detector-notification.hiding {
+    animation: deepfake-detector-slide-out 0.5s ease-in forwards;
+  }
+  
+  .notification-icon {
+    margin-right: 12px;
+    font-size: 20px;
+  }
+  
+  .notification-content {
+    flex: 1;
+    font-size: 14px;
+  }
+  
+  .notification-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 0 0 10px;
+    margin: 0;
+  }
+  
+  .notification-close:hover {
+    color: white;
+  }
+  
+  /* Result overlay styling */
+  .deepfake-detector-result {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #0F172A;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    z-index: 9999999;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    animation: deepfake-detector-fade-in 0.3s ease-out;
+    overflow: hidden;
+  }
+  
+  .deepfake-detector-result .result-header {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    position: relative;
+  }
+  
+  .deepfake-detector-result.deepfake .result-header {
+    background-color: #db4437;
+    color: white;
+  }
+  
+  .deepfake-detector-result.authentic .result-header {
+    background-color: #0f9d58;
+    color: white;
+  }
+  
+  .result-icon {
+    font-size: 24px;
+    margin-right: 12px;
+  }
+  
+  .result-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    flex: 1;
+  }
+  
+  .result-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+  }
+  
+  .result-close:hover {
+    color: white;
+  }
+  
+  .result-content {
+    padding: 16px;
+    color: #E2E8F0;
+  }
+  
+  .confidence-section {
+    margin-bottom: 16px;
+  }
+  
+  .confidence-label {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #94A3B8;
+    font-size: 14px;
+  }
+  
+  .confidence-value {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  
+  .deepfake-detector-result.deepfake .confidence-value {
+    color: #db4437;
+  }
+  
+  .deepfake-detector-result.authentic .confidence-value {
+    color: #0f9d58;
+  }
+  
+  .confidence-meter {
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .confidence-bar {
+    height: 100%;
+    transition: width 1s ease-out;
+    width: 0;
+  }
+  
+  .confidence-bar.deepfake {
+    background-color: #db4437;
+  }
+  
+  .confidence-bar.authentic {
+    background-color: #0f9d58;
+  }
+  
+  .details-section {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  
+  .detail-row:last-child {
+    margin-bottom: 0;
+  }
+  
+  .detail-label {
+    color: #94A3B8;
+  }
+  
+  .detail-value {
+    font-weight: 600;
+    color: #F8FAFC;
+  }
+  
+  .result-summary {
+    color: #E2E8F0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .result-summary p {
+    margin: 0 0 8px 0;
+  }
+  
+  .result-summary p:last-child {
+    margin-bottom: 0;
+  }
+  
+  .help-text {
+    padding: 12px 16px;
+    background-color: rgba(255, 255, 255, 0.04);
+    border-top: 1px solid rgba(6, 182, 212, 0.35);
+    color: #94A3B8;
+    font-size: 12px;
+    text-align: center;
+  }
+  
+  /* Animations */
+  @keyframes deepfake-detector-slide-in {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes deepfake-detector-slide-out {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes deepfake-detector-fade-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -40%);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  /* WebRTC helper styles */
+.df-helper-overlay {
+  position: fixed;
+  border: 3px solid #06B6D4;
+  box-shadow: 0 0 0 3000px rgba(0, 0, 0, 0.5);
+  z-index: 999998;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.df-helper-label {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #06B6D4;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.df-capture-instructions {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  z-index: 999999;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.df-instructions-content {
+  text-align: center;
+}
+
+.df-instructions-content h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.df-instructions-content p {
+  margin: 8px 0;
+}
+
+.df-continue-btn, .df-cancel-btn {
+  background: #06B6D4;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  margin: 10px 5px 0;
+  cursor: pointer;
+}
+
+.df-cancel-btn {
+  background: #666;
+}
+
+.df-continue-btn:hover {
+  background: #0891B2;
+}
+
+.df-cancel-btn:hover {
+  background: #555;
+}
+
+.timing-section {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(6, 182, 212, 0.35);
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.detail-label {
+  color: #94A3B8;
+}
+
+.detail-value {
+  font-weight: 500;
+  text-align: right;
+}
+
+/* Real-time Progress Bar Card */
+.df-progress-card {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 320px;
+  background: rgba(18, 18, 26, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 16px 18px;
+  color: #ffffff;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  z-index: 9999999;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  animation: deepfake-detector-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.df-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.df-progress-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+  letter-spacing: 0.2px;
+}
+
+.df-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #06B6D4;
+  border-radius: 50%;
+  animation: df-spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes df-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.df-progress-percent {
+  font-size: 13px;
+  font-weight: 700;
+  color: #06B6D4;
+  font-family: monospace;
+}
+
+.df-progress-bar-track {
+  height: 8px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.df-progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #06B6D4, #0891B2);
+  border-radius: 999px;
+  transition: width 0.25s ease-out;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+  position: relative;
+}
+
+.df-progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: df-shimmer 1.5s infinite;
+}
+
+@keyframes df-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.df-progress-status {
+  font-size: 12px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
