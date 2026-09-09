@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
       video.playsInline = true;
       video.src = objectUrl;
 
-      video.addEventListener('error', () => finish(new Error('This video format could not be read by the browser.')));
+      video.addEventListener('error', () => finish(new Error('This video format could not be read by the browser. Please choose an MP4, WebM, or MOV file.')));
       video.addEventListener('loadedmetadata', async () => {
         if (!Number.isFinite(video.duration) || video.duration <= 0) {
           finish(new Error('The video has no readable duration.'));

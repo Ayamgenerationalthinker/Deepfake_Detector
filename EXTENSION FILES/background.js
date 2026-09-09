@@ -73,25 +73,32 @@ function sendMessageToTab(tabId, message) {
   });
 }
 
+function loadAnalysisHistoryFromStorage(callback) {
+  chrome.storage.local.get(['analysisHistory'], (result) => {
+    if (Array.isArray(result.analysisHistory)) {
+      analysisHistory = result.analysisHistory;
+    } else {
+      analysisHistory = [];
+      chrome.storage.local.set({analysisHistory: []});
+    }
+    if (typeof callback === 'function') {
+      callback();
+    }
+  });
+}
+
 // Registering context menus when extension is installed
 chrome.runtime.onInstalled.addListener(() => {
   console.log("VeriGuard extension installed");
   registerContextMenus();
-  
- 
-  chrome.storage.local.get(['analysisHistory'], (result) => {
-    if (result.analysisHistory) {
-      analysisHistory = result.analysisHistory;
-    } else {
-      chrome.storage.local.set({analysisHistory: []});
-    }
-  });
+  loadAnalysisHistoryFromStorage();
 });
 
 // Registering context menus when browser starts
 chrome.runtime.onStartup.addListener(() => {
   console.log("Browser started - reinstalling context menus");
   registerContextMenus();
+  loadAnalysisHistoryFromStorage();
 });
 
 // For keyboard shortcut for analysis
@@ -175,7 +182,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   
   // Handling history related messages
   if (msg.action === "getHistory") {
-    sendResponse({history: analysisHistory});
+    loadAnalysisHistoryFromStorage(() => {
+      sendResponse({history: analysisHistory});
+    });
     return true;
   }
   else if (msg.action === "clearHistory") {
