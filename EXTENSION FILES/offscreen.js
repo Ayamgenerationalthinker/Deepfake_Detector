@@ -102,12 +102,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 async function handleAnalyzeFrames(frames, metadata) {
     const tabId = metadata ? metadata.tabId : null;
+    const source = metadata?.source || 'page';
 
     if (tabId) {
         chrome.runtime.sendMessage({
             target: 'background',
             action: 'updateProgress',
             tabId: tabId,
+            source: source,
             current: 0,
             total: frames.length,
             message: "Loading ONNX model into browser memory..."
@@ -130,6 +132,7 @@ async function handleAnalyzeFrames(frames, metadata) {
                 target: 'background',
                 action: 'updateProgress',
                 tabId: tabId,
+                source: source,
                 current: i + 1,
                 total: frames.length,
                 message: `Running ONNX Inference: Frame ${i + 1} of ${frames.length}`

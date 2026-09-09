@@ -148,7 +148,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 // Improving background script message handling
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.action === "analyzeUploadedFrames") {
-    analyzeUploadedFrames(msg.frames, msg.fileName)
+    analyzeUploadedFrames(msg.frames, msg.fileName, msg.tabId || null)
       .then(sendResponse)
       .catch(error => sendResponse({ error: error.message || "Upload analysis failed" }));
     return true;
@@ -227,6 +227,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   // Handling ONNX progress updates from offscreen document
   if (msg.target === 'background' && msg.action === 'updateProgress') {
+    if (msg.source === 'upload') {
+      chrome.runtime.sendMessage({
+        target: 'popup',
+        action: 'uploadProgress',
+        current: msg.current,
+        total: msg.total,
+        message: msg.message
+      }).catch(() => {});
+    }
+
     if (msg.tabId) {
       sendMessageToTab(msg.tabId, {
         action: "showProgress",
@@ -248,7 +258,7 @@ async function ensureOffscreenDocumentForUpload() {
   });
 }
 
-function analyzeUploadedFrames(frames, fileName) {
+function analyzeUploadedFrames(frames, fileName, tabId = null) {
   if (!Array.isArray(frames) || frames.length === 0) {
     return Promise.reject(new Error('No video frames were extracted.'));
   }
@@ -259,7 +269,7 @@ function analyzeUploadedFrames(frames, fileName) {
       action: 'analyzeFrames',
       frames,
       metadata: {
-        tabId: null,
+        tabId,
         id: `upload-${Date.now()}`,
         timestamp: Date.now(),
         frameCount: frames.length,
@@ -423,7 +433,6 @@ function analyzeFrames(tabId, frames, metadata) {
     console.log(`Good frame count: ${frames.length} frames for analysis`);
   }
   
-  // ===== HYBRID APPROACH: THRESHOLD-BASED BATCH PROCESSING =====
   // Configuringbatch processing parameters
   const BATCH_THRESHOLD = 100; // Only using batches for videos with more than this many frames
   const MAX_FRAMES_PER_BATCH = 200; // Maximum frames per batch )

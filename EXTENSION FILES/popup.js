@@ -19,6 +19,38 @@ document.addEventListener('DOMContentLoaded', function() {
     // Checking the  current tab for videos
     checkCurrentTabForVideos();
   });
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request?.target === 'popup' && request?.action === 'uploadProgress') {
+    const uploadResult = document.getElementById('upload-analysis-result');
+    if (!uploadResult) {
+      sendResponse({ success: true });
+      return true;
+    }
+
+    const current = Number(request.current || 0);
+    const total = Number(request.total || 0);
+    const percent = total > 0 ? Math.min(100, Math.round((current / total) * 100)) : 0;
+    const message = request.message || 'Analyzing video frames...';
+
+    uploadResult.innerHTML = `
+      <div class="analysis-result pending">
+        <div class="analysis-progress-meta">
+          <span class="analysis-progress-label">${message}</span>
+          <span class="analysis-progress-percent">${percent}%</span>
+        </div>
+        <div class="analysis-progress-track">
+          <div class="analysis-progress-fill" style="width: ${percent}%;"></div>
+        </div>
+      </div>
+    `;
+
+    sendResponse({ success: true });
+    return true;
+  }
+
+  return false;
+});
   
   // Setting up tab navigation
   function setupTabs() {
@@ -49,6 +81,12 @@ document.addEventListener('DOMContentLoaded', function() {
       const file = fileInput.files[0];
       if (!file) return;
 
+      const currentTab = await new Promise(resolve => {
+        chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+          resolve(tabs && tabs[0] ? tabs[0] : null);
+        });
+      });
+
       fileName.textContent = file.name;
       uploadButton.classList.add('disabled');
       resultContainer.innerHTML = '<div class="analysis-result pending">Preparing video frames...</div>';
@@ -60,7 +98,8 @@ document.addEventListener('DOMContentLoaded', function() {
         chrome.runtime.sendMessage({
           action: 'analyzeUploadedFrames',
           frames,
-          fileName: file.name
+          fileName: file.name,
+          tabId: currentTab?.id || null
         }, response => {
           if (chrome.runtime.lastError) {
             showUploadResult('error', chrome.runtime.lastError.message);
@@ -377,30 +416,6 @@ document.addEventListener('DOMContentLoaded', function() {
       return true;
     } catch (_) {
       return false;
-    }
-  }
-  
-  // Detecting platform from URL
-  function detectPlatform(url) {
-    try {
-      const urlObj = new URL(url);
-      const hostname = urlObj.hostname.toLowerCase();
-      
-      if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
-        return 'youtube';
-      } else if (hostname.includes('facebook.com') || hostname.includes('fb.com')) {
-        return 'facebook';
-      } else if (hostname.includes('twitter.com') || hostname.includes('x.com')) {
-        return 'twitter';
-      } else if (hostname.includes('instagram.com')) {
-        return 'instagram';
-      } else if (hostname.includes('tiktok.com')) {
-        return 'tiktok';
-      } else {
-        return 'generic';
-      }
-    } catch (_) {
-      return 'generic';
     }
   }
   
